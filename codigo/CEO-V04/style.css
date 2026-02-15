@@ -1,0 +1,52 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.quadrante {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#q1, #q5 {
+
+  background-color: #E7E7E7 ;
+
+}
+
+#q2, #q3 {
+
+  background-color: #D8D8D8 ;
+
+}
+
+#q4 {
+
+  background-color: #00A3FF ;
+  font-size:40px;
+  
+}
+
+.dentro {
+
+background-color: #00A3FF !important;
+  
+}
+
+.gigante {
+  font-size: 40vw !important;
+}
+
+@media (min-width: 768px) {
+  .gigante {
+    font-size: 40vh !important;
+  }
+}

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Aklas</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/x-icon" href="icon.png">
+</head>
+
+<body>
+
+  <div class="quadrante " onclick="sayQ1();" id="q1">TEMPO PARA O ÔNIBUS CHEGAR: Carregando...</div>
+  <div class="quadrante " onclick="sayQ2();" id="q2">TEMPO PARA CHEGAR AO PONTO APÓS O EMBARQUE: Carregando...</div>
+  <div class="quadrante " onclick="sayQ3();" ondblclick="repedir_local()" id="q3">ONDE VOCÊ ESTÁ: Carregando...</div>
+  <div class="quadrante " onclick="sayQ4();" id="q5">HORA: Carregando...</div>
+
+  <script src="server.js"></script>
+  <script>
+
+    localStorage.setItem("em_minutos", " carregando... ");
+    
+    var horaFormatada = 0;
+    var maneira_porca = "Locais não válidos!";
+    var local = localStorage.getItem("local");
+    var destino = localStorage.getItem("destino");
+
+    // Verifica se 'local' não existe
+    if (!local) {
+      // Se não existe, pede ao usuário para fornecer um valor
+      local = pedir_algo("local");
+      destino = pedir_algo("destino");
+
+      // Armazena o valor fornecido pelo usuário no localStorage
+      localStorage.setItem("local", local);
+      localStorage.setItem("destino", destino);
+    }
+
+    function repedir_local() {
+
+      local = pedir_algo("local");
+
+      // Armazena o valor fornecido pelo usuário no localStorage
+      localStorage.setItem("local", local);
+
+      atualizar_demora();
+      main()
+      .then
+      {
+      atualizar_chegada()
+      .then
+        {
+      atualizarRelogio();
+        }
+      }
+      document.getElementById("q3").innerHTML = "ONDE VOCÊ ESTÁ: " + local;
+
+
+    }
+
+    // Atualiza o conteúdo do quadrante 1 com o valor de 'local'
+    document.getElementById("q3").innerHTML = "ONDE VOCÊ ESTÁ: " + local;
+
+
+    // relogio
+
+    function atualizar_demora ()
+      {
+    // Pegar ID do local
+    testar_ponto(local)
+      .then(testar_local => {
+        testar_ponto(destino)
+          .then(testar_destino => {
+
+            readInformacao("tempmedia", dados => {
+              linhas_de_onibus(local, destino)
+                .then(resultado => {
+
+                  for (xx = 0; xx < dados.length; xx++) {
+                    let onibus_especifico = dados[xx]; // so tem 5045 implementado
+
+
+                    if (onibus_especifico.busao == resultado) {
+
+                      maneira_porca = testar_destino - testar_local;
+
+                      maneira_porca *= onibus_especifico.media;
+
+                      document.getElementById("q2").innerHTML = "TEMPO PARA CHEGAR AO PONTO APÓS O EMBARQUE: " + maneira_porca + " minutos.";
+                      localStorage.set("descendoEM", maneira_porca);
+                    }
+                    else {
+
+                      maneira_porca = "Locais não válidos!";
+                      document.getElementById("q2").innerHTML = "TEMPO PARA CHEGAR AO PONTO APÓS O EMBARQUE: " + maneira_porca;
+
+                    }
+
+                    atualizarRelogio();
+                  }
+
+                });
+            });
+          })
+      })
+        }
+
+    atualizar_demora();
+
+    // tempo para a chegada do onibus
+    /*
+      Funcao que retorna tempo para o onibus chegar, ela deve pegar a hora atual. verificar no json apenas os horários depois da hora atual.
+    */
+
+    function diga_tudo_que_sabe()
+      {
+
+        textToSpeech("ônibus - Ir. ");
+
+      }
+
+    function sayQ1() {
+        textToSpeech("Tempo para o ônibus chegar: " + localStorage.getItem("em_minutos") + " minutos");
+    }
+
+    function sayQ2() {
+
+
+
+        textToSpeech("TEMPO PARA CHEGAR AO PONTO APÓS O EMBARQUE: " + maneira_porca + " minutos");
+    }
+
+    function sayQ3() {
+        textToSpeech("Onde você está: " + local);
+    }
+
+    function sayQ4() {
+      textToSpeech("Hora: " + horaFormatada);
+    }
+
+    diga_tudo_que_sabe();
+
+    // começando a fazer o primeiro quadrante
+
+    /* para funcionar:
+
+  * receber o proximo valor de partida
+  * calcular a quantia de tempo que o onibus vai demorar somando o tempo de todos os pontos entre a estação e o ponto atual
+  * calcular o tempo de chegada do onibus somando o proximo horario de partida a quantia de tempo que vai demorar da estacao ate aqui
+  * subtrair do tempo de chegada do proximo onibus a hora atual
+
+  * mostrar na ela o tempo qu falta para o onibus chegar
+
+    */
+
+    // Exemplo de uso com o JSON fornecido
+
+
+    // Definir a variável onibusdata com os dados da URL
+
+var inicio_hr = 0;
+var inicio_mn = 0;
+
+var apos_hr = 0;
+var apos_mn = 0;
+
+    function obterIdInicioAposHoraAtual(jsonData) {
+      // Obtém a hora atual
+      const horaAtual = new Date();
+
+      // Itera sobre os inícios no JSON
+      for (const inicio of jsonData[1].inicios) {
+        const horaInicio = new Date();
+        horaInicio.setHours(inicio.hr, inicio.mn, 0); // Ajusta a hora e minuto, mantendo segundos como 0
+
+        // Verifica se o início ocorre após a hora atual
+        if (horaInicio > horaAtual) {
+
+          apos_hr = inicio.hr;
+          apos_mn = inicio.mn;
+          
+          return inicio.id -1;
+        }
+          inicio_hr = inicio.hr;
+          inicio_mn = inicio.mn;
+      }
+
+      // Retorna null se nenhum início for encontrado após a hora atual
+      return null;
+    }
+
+
+    async function fetchAndTransformData() {
+      try {
+        // Faz a solicitação HTTP usando fetch
+        const response = await fetch('https://servidor--aklas.repl.co/onibus/');
+
+        // Verifica se a solicitação foi bem-sucedida (status 200)
+        if (!response.ok) {
+          throw new Error(`Erro na solicitação: ${response.status}`);
+        }
+
+        // Converte a resposta para JSON
+        const json = await response.json();
+
+        // Transforma o JSON em constante jsonData
+        const jsonData = json;
+
+        // Exemplo de uso da constante
+        console.log(jsonData);
+
+        // Retorne a constante jsonData se necessário
+        return jsonData;
+      } catch (error) {
+        console.error(`Erro durante a solicitação: ${error.message}`);
+        // Trate o erro conforme necessário
+      }
+    }
+
+    async function main() {
+      try {
+        // Chama a função fetchAndTransformData e aguarda a Promise ser resolvida
+        const jsonData = await fetchAndTransformData();
+
+        // Chama a função obterIdInicioAposHoraAtual e aguarda a Promise ser resolvida
+        const resultado = await obterIdInicioAposHoraAtual(jsonData);
+
+        // Imprime o resultado
+        console.log("resultado: " + resultado);
+      } catch (error) {
+        console.error(`Erro durante a execução: ${error.message}`);
+        // Trate o erro conforme necessário
+      }
+    }
+
+    // Chama a função principal
+    main();
+
+var delay = 0;
+
+    function atualizar_chegada ()
+      {
+    // Pegar ID do local
+    testar_ponto(local)
+      .then(testar_local => {
+            readInformacao("tempmedia", dados => {
+              linhas_de_onibus(local, destino)
+                .then(resultado => {
+                  for (xx = 0; xx < dados.length; xx++) {
+                    let onibus_especifico = dados[xx]; // so tem 5045 implementado
+
+                    delay = testar_local;
+
+                    delay *= onibus_especifico.media;
+
+                  }
+
+                });
+            });
+      })
+        }
+
+    atualizar_chegada();
+
+    var sechegou = 0;
+    var lockin = 2;
+    
+    function atualizarRelogio() {
+      console.log("tic tac");
+      var agora = new Date();
+      var horas = agora.getHours();
+      var minutos = agora.getMinutes();
+      var segundos = agora.getSeconds();
+
+      // Formatação para garantir que sempre tenhamos dois dígitos
+      horas = horas < 10 ? '0' + horas : horas;
+      minutos = minutos < 10 ? '0' + minutos : minutos;
+      segundos = segundos < 10 ? '0' + segundos : segundos;
+
+      horaFormatada = horas + ':' + minutos + ':' + segundos;
+
+      var xxx = delay + inicio_mn;
+      var yyy = inicio_hr;
+      while(xxx > 60)
+        {
+
+          xxx-=60;
+          yyy++;
+          
+        }
+
+      var hh = yyy - horas;
+      var mm = xxx - minutos;
+
+      var em_minutos = hh * 60 + mm;
+
+      if(em_minutos<0)
+      {
+
+        xxx = delay + apos_mn;
+        yyy = apos_hr;
+
+        console.log(apos_hr+ ':b:' + apos_mn);
+        console.log(delay + ' :-) ');
+        
+        while(xxx > 60)
+          {
+
+            xxx-=60;
+            yyy++;
+
+          }
+
+        hh = yyy - horas;
+        mm = xxx - minutos;
+
+        console.log(hh + ':' + mm);
+
+        em_minutos = hh * 60 + mm;
+        
+      }
+
+      //em_minutos = 0;
+      c(sechegou + lockin, "sechegou + lockin", em_minutos, "em_minutos", "atualizarRelogio");
+
+      var timeout = 26;
+      if(em_minutos < timeout && !sechegou && lockin < 0) 
+      {
+      console.log("fard");
+      textToSpeech("O onibus chegou");
+      window.alert("O onibus chegou");
+      
+      document.getElementById('q1').innerHTML = "CLIQUE AQUI PARA IR";
+      document.getElementById('q1').classList.add('dentro');
+      document.getElementById('q1').addEventListener('dblclick', function() {
+          ir_para('onibus-ir-ir');
+        });
+      document.getElementById('q1').addEventListener('ontouchmove', function() {
+        ir_para('onibus-ir-ir');
+      });
+
+      sechegou = 1;
+      }
+      else if (em_minutos > timeout)
+      {
+        document.getElementById('q1').classList.remove('dentro');
+        console.log("farde");
+        sechegou = 0;
+
+        document.getElementById('q1').removeEventListener('dblclick', function()
+        {
+          ir_para('onibus-ir-ir');
+        });
+
+        document.getElementById('q1').removeEventListener('ontouchmove', function()
+        {
+          ir_para('onibus-ir-ir');
+        });
+        
+      }
+
+      lockin--;
+      
+      /*if(em_minutos > 54)
+      textToSpeech("O onibus chegou");*/
+
+      // Atualiza o conteúdo da div
+      document.getElementById('q5').innerHTML = 'HORA: ' + horaFormatada;
+      if(!sechegou)
+      document.getElementById("q1").innerHTML = "TEMPO PARA O ÔNIBUS CHEGAR: " + em_minutos + " minutos.";
+
+localStorage.setItem("em_minutos", em_minutos);
+
+      setInterval(atualizarRelogio, 10000);
+    }
+
+    // Chama a função inicialmente
+    atualizarRelogio();
+    document.getElementById("q1").innerHTML = "TEMPO PARA O ÔNIBUS CHEGAR: Carregando...";
+
+
+  </script>
+  <script src="https://kit.fontawesome.com/c70ac41f4e.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

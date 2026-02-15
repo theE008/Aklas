@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Aklas</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/x-icon" href="icon.png">
+
+
+  
+</head>
+<body>
+
+  <div class="quadrante gigante" onclick="sayQ1();" ondblclick="ir_para('nao_feito')" ontouchmove="ir_para('nao_feito')" id="q1"><i class="fa-solid fa-map-location-dot"></i></div>
+  <div class="quadrante gigante" onclick="sayQ2();" ondblclick="ir_para('onibus')" ontouchmove="ir_para('onibus')" id="q2"><i class="fa-solid fa-bus"></i></div>
+  <div class="quadrante gigante" onclick="sayQ3();" ondblclick="ir_para('nao_feito')" ontouchmove="ir_para('nao_feito')" id="q3"><i class="fa-regular fa-pen-to-square"></i></div>
+  <div class="quadrante gigante" onclick="sayQ4();" ondblclick="ir_para('config')" ontouchmove="ir_para('config')" id="q4"><i class="fa-solid fa-gear"></i></div>
+
+  <script src="server.js"></script>
+  <script>
+
+    function diga_tudo_que_sabe()
+      {
+
+        textToSpeech("Aklas tela inicial ");
+
+      }
+
+    function sayQ1() {
+        textToSpeech("Caminho até o ônibus");
+    }
+
+    function sayQ2() {
+
+        textToSpeech("Pegar o ônibus");
+    }
+
+    function sayQ3() {
+        textToSpeech("Notas ");
+    }
+
+    function sayQ4() {
+      textToSpeech("Configurações ");
+    }
+
+    diga_tudo_que_sabe();
+
+  </script>
+    <script src="https://kit.fontawesome.com/c70ac41f4e.js" crossorigin="anonymous"></script>
+</body>
+</html>

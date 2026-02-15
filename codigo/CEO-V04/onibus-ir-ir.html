@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Aklas</title>
+  <link rel="icon" type="image/x-icon" href="icon.png">
+
+</head>
+<body width="100%" height="100%" onclick="ativado();" >
+
+  <div style="text-align: center; width: 100%; font-family: Arial, Helvetica, sans-serif;">
+      <p id="aqui">Carregando...</p>
+  </div>
+  
+  </div>
+  <script src="server.js"></script>
+  <script>
+
+    function diga_tudo_que_sabe() {
+      textToSpeech("Esperando a descida do ônibus ");
+    }
+
+    diga_tudo_que_sabe();
+
+    // Obtém o tempo salvo ou define o tempo atual se ainda não foi salvo
+    var tempo = localStorage.getItem("em_minutos");
+    var tempoAtual = localStorage.getItem("tempoAtual");
+    var segundosRestantes = "Carregando...";
+    
+    if (!tempoAtual) {
+      tempoAtual = new Date().getTime();
+      localStorage.setItem("tempoAtual", tempoAtual);
+    }
+
+    function atualizarTempo(tempoEmMinutos) {
+        // Calcula o tempo de descida adicionando o tempo fornecido em minutos
+        var descida = new Date(parseInt(tempoAtual) + tempoEmMinutos * 60000);
+
+        // Calcula a diferença entre o tempo de descida e o tempo atual
+        var diferenca = descida - new Date();
+
+        // Converte a diferença para segundos
+        segundosRestantes = Math.floor(diferenca / 1000);
+      
+        // Atualiza o conteúdo do parágrafo
+      if(segundosRestantes<30)
+      {
+        document.getElementById("aqui").innerHTML = "Você chegou ao seu destino";
+        ativado();
+      }
+      else
+      {
+        document.getElementById("aqui").innerHTML = "Tempo restante: " + segundosRestantes + " segundos";
+      }
+
+    
+    }
+
+    // Atualiza o tempo quando a página carregar
+    window.onload = function() {
+        atualizarTempo(tempo);
+
+        // Chama a função a cada dez segundos (em milissegundos)
+        setInterval(function() {
+          atualizarTempo(tempo);
+        }, 10000);
+    };
+
+    function textToSpeech(text) {
+      if ('speechSynthesis' in window) {
+        var synthesis = window.speechSynthesis;
+
+        // Limpa as utterances antigas
+        synthesis.cancel();
+
+        var utterance = new SpeechSynthesisUtterance(text);
+        synthesis.speak(utterance);
+      } else {
+        console.error('Desculpe, seu navegador não suporta a API de fala.');
+      }
+    }
+
+    function ativado ()
+      {
+
+        if(segundosRestantes<30)
+        {
+          textToSpeech("Dêssa, você chegou ao seu destino");
+        }
+        else
+        textToSpeech("Faltam " + segundosRestantes + " segundos para chegar ao ponto");
+        
+      }
+
+  </script>
+    <script src="https://kit.fontawesome.com/c70ac41f4e.js" crossorigin="anonymous"></script>
+  
+</body>
+</html>

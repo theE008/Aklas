@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Aklas - Onibus</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/x-icon" href="icon.png">
+</head>
+<body>
+
+  <div class="quadrante" id="q1" onclick="sayCu();" ondblclick="repedir_local()">Local Atual: Carregando...</div>
+  <div class="quadrante" id="q2" onclick="sayDe();" ondblclick="repedir_destino()">Destino: Carregando...</div>
+  <div class="quadrante" onclick="sayNa();" id="q3">Linhas de Ônibus: Carregando...</div>
+  <div class="quadrante" id="q4" onclick="sayBu();" ondblclick="ir_para('onibus-ir')" ontouchmove="ir_para('onibus-ir')">IR</div>
+
+  <script src="server.js"></script>
+  <script>
+
+    stt("Local Atual: ", "q1", "q1", "local");
+    stt("Destino: ", "q2", "q2", "destino");
+
+    function centraliza()
+      {
+    
+    var local = localStorage.getItem("local");
+    var destino = localStorage.getItem("destino");
+
+    
+    // Verifica se 'local' não existe
+    if (!local) {
+          // Se não existe, pede ao usuário para fornecer um valor
+        local = pedir_algo("local");
+        destino = pedir_algo("destino");
+  
+          // Armazena o valor fornecido pelo usuário no localStorage
+        localStorage.setItem("local", local);
+        localStorage.setItem("destino", destino);
+}
+
+    // Atualiza o conteúdo do quadrante 1 com o valor de 'local'
+    document.getElementById("q1").innerHTML = "Local Atual: " + local;
+        // Atualiza o conteúdo do quadrante 2 com o valor de 'destino'
+    document.getElementById("q2").innerHTML = "Destino: " + destino;
+
+    onibus_possiveis(local, destino);
+        }
+
+    centraliza();
+
+    function repedir_local()
+      {
+
+        local = pedir_algo("local");
+
+          // Armazena o valor fornecido pelo usuário no localStorage
+        localStorage.setItem("local", local);
+
+        document.getElementById("q1").innerHTML = "Local Atual: " + local;
+
+        onibus_possiveis(local, destino);
+        
+      }
+
+    function repedir_destino()
+      {
+
+        destino = pedir_algo("destino");
+
+          // Armazena o valor fornecido pelo usuário no localStorage
+        localStorage.setItem("destino", destino);
+
+        document.getElementById("q2").innerHTML = "Destino: " + destino;
+
+        onibus_possiveis(local, destino);
+        
+      }
+
+    //
+    //
+    // PERIGO! DOR E SOFRIMENTO ABAIXO!
+    //
+    //
+
+    var linhasT = "algo de errado aconteceu";
+    
+    function onibus_possiveis(local, destino) {
+        //window.alert(local + " & " + destino);
+
+        var q3 = document.getElementById("q3");
+
+        linhas_de_onibus(local, destino)
+            .then(resultado => {
+
+            if(resultado == null)
+            resultado = "Não há linhas de ônibus que passem EXATAMENTE neste caminho.";
+
+              
+
+              if(resultado == 0)
+              resultado = "Não há linhas de ônibus que passem nem na sua licalização atual nem no seu destino.";
+
+
+              
+                q3.innerHTML = "Linhas de Ônibus: " + resultado;
+              linhasT = resultado;
+            })
+            .catch(error => {
+                console.error("Erro:", error);
+                q3.innerHTML = "Erro ao obter linhas de ônibus";
+            });
+    }
+
+
+    function diga_tudo_que_sabe()
+      {
+        
+        textToSpeech("Navegação em ônibus. "/*          +
+                     ".Local atual: "      + local    +
+                     ".Destino: "          + destino  +
+                     ".Linhas de ônibus: " + Linhas_T 
+                     ".Ir"*/);
+        
+      }
+
+    function sayNa() {
+        textToSpeech("Linhas de ônibus: " + linhasT);
+    }
+
+    function sayCu() {
+        textToSpeech("Local atual: " + local);
+    }
+
+    function sayDe() {
+        textToSpeech("Destino: " + destino);
+    }
+
+    function sayBu() {
+      textToSpeech("Ir");
+    }
+    
+    diga_tudo_que_sabe();
+
+
+
+  </script>
+</body>
+</html>

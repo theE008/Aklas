@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ERRO 404</title>
+</head>
+<body>
+  <h1  style="text-align: center;">ERRO 404</h1>
+  <p style="text-align: center;">Sessão não feita!</p>
+
+  <script src="server.js"></script>
+
+  <script>
+    // Certifique-se de que textToSpeech está definida e implementada em server.js
+    textToSpeech("Esta parte do código ainda não foi feita, espere alguns segundos e será redirecionado a tela principal");
+
+    setTimeout(function(){
+      window.location.href = "index.html";
+    }, 10000);
+  </script>
+</body>
+</html>
