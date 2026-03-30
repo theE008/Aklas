@@ -1,20 +1,22 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-718a45dd9cf7e7f842a935f5ebbe5719a5e09af4491e668f4dbf3b35d5cca122.svg)](https://classroom.github.com/online_ide?assignment_repo_id=12112408&assignment_repo_type=AssignmentRepo)
-# Nome do projeto
+# Aklas - Assistência de pessoas cegas em ônibus
 
-Escreva um ou dois parágrafo resumindo o objetivo do seu projeto.
+A ideia central do projeto era assistir pessoas com deficiência visual a usar o transporte público. Seria um app mobile, onde a tela seria divida em quadrantes que falam em voz alta para o usuário, antes dele realmente tomar decisões. O aplicativo iria ser um GPS para caminhada, espera, embarcação e descida de transporte público, usando um apito para alertar o usuário caso seu ônibus estivesse chegando ao ponto, e dizendo direções a se seguir em ordem de alcançar o ponto. O aplicativo também contaria com um sistema de anotações por voz.
+
+Este é um projeto que nosso grupo fez no primeiro semestre do curso (2023/2) para a matéria de TI1. Escolhemos o nome 'Aklas' na época por significar 'cego' em Lithuniano e se assemelhar a 'Atlas' (já que o projeto envolveria um mapa). Mas após anos de reconsideração, podemos sim assumir que o escopo do projeto era demais para alunos do primeiro semestre, e não seria possível fazer algo de qualidade sem o uso de Flutter e APIs. Além de que seria mais indicado conseguirmos entrevistar a pessoas com necessidade de acessibilidade visual, para validar a qualidade do produto (além do nome não ser exatamente agradável na língua).
+
+Ele está indeterminadamente em Hiato, mas pode sim voltar, caso alguém queira o reimplementar usando as novas tecnologias que temos acesso.
 
 ## Alunos integrantes da equipe
 
-* Nome completo do aluno 1
-* Nome completo do aluno 2
-* Nome completo do aluno 3
-* Nome completo do aluno 4
+● Augusto Vinícios Vilar Sette
+● Júlio César Araújo Biluca
+● Matheus Eduardo Campos Soares
+● Thiago Pereira de Oliveira
 
 ## Professores responsáveis
 
-* Nome completo do professor 1
-* Nome completo do professor 2
+* Rommel Carneiro
 
 ## Instruções de utilização
 
-Assim que a primeira versão do sistema estiver disponível, deverá complementar com as instruções de utilização. Descreva como instalar eventuais dependências e como executar a aplicação.
+
